@@ -12,17 +12,15 @@ using namespace cpr;
 namespace py = pybind11;
 
 
-auto headers = cpr::Header{
-};
 
 vector<cpr::Response> responseList;
 mutex _mutex;
 
 
-void requests_get(vector<string> urls) {
+void requests_get(vector<string> urls, Header header) {
     vector<cpr::Response> res;
     for (const auto &url:urls) {
-        auto r = Get(Url{url}, headers, VerifySsl() = false);
+        auto r = Get(Url{url}, header, VerifySsl() = false);
         res.push_back(move(r));
     }
     lock_guard<mutex> lock(_mutex);
@@ -32,10 +30,10 @@ void requests_get(vector<string> urls) {
 }
 
 vector<Response> get(vector<string> urls,py::dict head_dict,int nthread = 5) {
-    cpr::Header headers;
+    cpr::Header header;
     for (auto item : head_dict)
     {
-        headers.insert({ string(py::str(item.first)) ,string(py::str(item.second)) });
+        header.insert({ string(py::str(item.first)) ,string(py::str(item.second)) });
     }
 	
        
@@ -61,7 +59,7 @@ vector<Response> get(vector<string> urls,py::dict head_dict,int nthread = 5) {
     vector<thread> threadPoll;
     for (int i = 0; i < nthread; i++) {
         thread t([=]() {
-            requests_get(ThreadUrls[i]);
+            requests_get(ThreadUrls[i], header);
         });
         threadPoll.push_back(move(t));
     }
