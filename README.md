@@ -48,4 +48,5 @@ urls = []
     for i in fast_requests.get(urls, headers,10):
         print(i.text)
 ```
+## 原理
 
