@@ -6,8 +6,8 @@ import json
 #     def __init__(self):
 #         pass
 
-def get(urls, header, nTjread=5):
-    return list(fast_requetst_cpp.get(urls, header, nTjread))
+def get(urls, header, nThread=5):
+    return fast_requetst_cpp.get(urls, header, nThread)
 
 # class Fast_requests:
 #     def __init__(self):
