@@ -9,7 +9,7 @@ windows平台和python3.7.2
 
 ## 使用
 
-下载`fast_requetst_cpp.pyd`、`fast_requests.py`、`libcurl-d.dll`、`zlibd1.dll`四 文件，在项目中导入`fast_requests.py`
+下载`fast_requetst_cpp.pyd`、`fast_requests.py`、`libcurl-d.dll`、`zlibd1.dll`四个文件，在项目中导入`fast_requests.py`
 
 ```
 api:
