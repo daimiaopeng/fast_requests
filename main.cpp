@@ -13,17 +13,16 @@ namespace py = pybind11;
 
 
 
-vector<cpr::Response> responseList;
 mutex _mutex;
 
 
-void requests_get(vector<string> urls, Header header) {
-    vector<cpr::Response> res;
+void requests_get(vector <string> urls, Header header, vector <cpr::Response> &responseList) {
+    vector <cpr::Response> res;
     for (const auto &url:urls) {
         auto r = Get(Url{url}, header, VerifySsl() = false);
         res.push_back(move(r));
     }
-    lock_guard<mutex> lock(_mutex);
+    lock_guard <mutex> lock(_mutex);
     for (auto &i : res) {
         responseList.push_back(move(i));
     }
@@ -31,6 +30,7 @@ void requests_get(vector<string> urls, Header header) {
 
 vector<Response> get(vector<string> urls,py::dict head_dict,int nthread = 5) {
     cpr::Header header;
+    vector <cpr::Response> responseList;
     for (auto item : head_dict)
     {
         header.insert({ string(py::str(item.first)) ,string(py::str(item.second)) });
@@ -58,9 +58,7 @@ vector<Response> get(vector<string> urls,py::dict head_dict,int nthread = 5) {
     //创建线程池
     vector<thread> threadPoll;
     for (int i = 0; i < nthread; i++) {
-        thread t([=]() {
-            requests_get(ThreadUrls[i], header);
-        });
+        thread t(requests_get, ThreadUrls[i], header, ref(responseList));
         threadPoll.push_back(move(t));
     }
 
