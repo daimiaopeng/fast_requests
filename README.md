@@ -27,6 +27,7 @@ Response 对象
 Response.text 正文text文本
 Response.status_code 状态码
 Response.header 
+Response.content() 二进制数据 
 Response.Url url 
 Response.elapsed 
 Response.cookies 
@@ -49,4 +50,5 @@ for i in fast_requests.get(urls, headers,10):
     print(i.text)
 ```
 ## 原理
-
+c++ : cpr  
+python : pybind11
