@@ -40,9 +40,9 @@ Response.error 暂且用不了
 ```python
 import fast_requests
 urls = []
-    headers = {
-        "User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36"
-    }
+headers = {
+    "User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36"
+}
 for i in range(1, 200):
     urls.append("https://baidu.com")
 for i in fast_requests.get(urls, headers,10):
