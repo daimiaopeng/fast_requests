@@ -19,7 +19,7 @@ def get(urls, headers, nThread=5):
     
 urls 请求的网址列表
 headers 请求头
-nTjread 线程数（看自己设备配置，一般设20就差不多了）
+nThread 线程数（看自己设备配置，一般设20就差不多了）
 返回 Response 对象列表
 
 Response 对象
