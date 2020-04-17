@@ -14,8 +14,8 @@ windows平台和python3.7.2
 ```
 api:
 
-def get(urls, headers, nTjread=5):
-    return list(fast_requetst_cpp.get(urls, headers, nTjread))
+def get(urls, headers, nThread=5):
+    return list(fast_requetst_cpp.get(urls, headers, nThread))
     
 urls 请求的网址列表
 headers 请求头
