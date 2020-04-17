@@ -66,37 +66,22 @@ vector<Response> get(vector<string> urls,py::dict head_dict,int nthread = 5) {
     return responseList;
 }
 
-auto test1(string &str) {
-    return py::bytes(str);
-}
-
-PYBIND11_MODULE(fast_requetst_cpp, m
-) {
-m.
-
-doc() = "pybind11 fast_requetst module";
-
-m.def("get", ::get);
-py::class_ <cpr::Response> response(m, "response");
-response.
-
-def (py::init<>())
-
-.def_readwrite("status_code", &Response::status_code)
-.def_readwrite("text", &Response::text)
-.def_readwrite("header", &Response::header)
-.def_readwrite("Url", &Response::url)
-.def_readwrite("elapsed", &Response::elapsed)
-.def_readwrite("cookies", &Response::cookies)
-.def_readwrite("error", &Response::error)
-.def("content",
-[](
-const Response &re
-) {
-return
-py::bytes(re
-.text);
-}
-);
+PYBIND11_MODULE(fast_requetst_cpp, m) {
+    m.doc() = "pybind11 fast_requetst module";
+    m.def("get", ::get);
+    py::class_<cpr::Response> response(m, "response");
+        response.def(py::init<>())
+        .def_readwrite("status_code", &Response::status_code)
+        .def_readwrite("text", &Response::text)
+        .def_readwrite("header", &Response::header)
+        .def_readwrite("Url", &Response::url)
+        .def_readwrite("elapsed", &Response::elapsed)
+        .def_readwrite("cookies", &Response::cookies)
+        .def_readwrite("error", &Response::error)
+        .def("content",
+                [](const Response& re) {
+                 return py::bytes(re.text);
+                }
+        );
 
 }
