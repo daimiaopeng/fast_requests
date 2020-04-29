@@ -51,7 +51,7 @@ headers = {
 }
 for i in range(1, 200):
     urls.append("https://baidu.com")
-for i in fast_requests.Get(urls, headers, 20):
+for i in fast_requests.get(urls, headers, 20):
     print(i.text)
     
 for i in fast_requests.sessionGet(urls, headers, 20):
