@@ -13,10 +13,28 @@ namespace py = pybind11;
 
 mutex _mutex;
 
-void requests_get(vector <string> urls, Header header, vector <cpr::Response> &responseList) {
+void _get(string type, vector <string> urls, bool isDebug, vector <cpr::Response> &responseList, Header headers, int timeOut,
+     bool verifySsl) {
     vector <cpr::Response> res;
+    auto threadId = this_thread::get_id();
+    int n = 0;
+    Session session;
+    if (type == "session") {
+        session.SetHeader(headers);
+        session.SetVerifySsl(verifySsl);
+        session.SetTimeout(timeOut);
+    }
     for (const auto &url:urls) {
-        auto r = Get(Url{url}, header, VerifySsl() = false);
+        Response r;
+        if (type == "get") {
+            r = Get(Url{url}, VerifySsl() = verifySsl, headers, Timeout{timeOut});
+        } else if (type == "session") {
+            session.SetUrl(url);
+            r = session.Get();
+        }
+        if (isDebug) {
+            cout << "DEBUG threadId = " << threadId << " status_code = " << r.status_code << " n = " << ++n << endl;
+        }
         res.push_back(move(r));
     }
     lock_guard <mutex> lock(_mutex);
@@ -25,15 +43,16 @@ void requests_get(vector <string> urls, Header header, vector <cpr::Response> &r
     }
 }
 
-vector<Response> get(vector<string> urls,py::dict head_dict,int nthread = 5) {
-    cpr::Header header;
+
+vector <Response> run(string type, vector <string> urls, py::dict head_dict, int nthread = 5, bool isDebug = false, int timeOut = 3000,
+    bool verifySsl = true) {
+    cpr::Header headers;
     vector <cpr::Response> responseList;
-    for (auto item : head_dict)
-    {
-        header.insert({ string(py::str(item.first)) ,string(py::str(item.second)) });
+    for (auto item : head_dict) {
+        headers.insert({string(py::str(item.first)), string(py::str(item.second))});
     }
-	
-       
+
+
     if (urls.empty())
         return responseList;
     if (urls.size() <= nthread) {
@@ -41,7 +60,7 @@ vector<Response> get(vector<string> urls,py::dict head_dict,int nthread = 5) {
     }
 
     // 分配任务数据
-    vector<vector<string>> ThreadUrls(nthread);
+    vector <vector<string>> ThreadUrls(nthread);
     while (!urls.empty()) {
         for (int i = 0; i < nthread; i++) {
             if (urls.empty()) {
@@ -53,9 +72,9 @@ vector<Response> get(vector<string> urls,py::dict head_dict,int nthread = 5) {
     }
 
     //创建线程池
-    vector<thread> threadPoll;
+    vector <thread> threadPoll;
     for (int i = 0; i < nthread; i++) {
-        thread t(requests_get, ThreadUrls[i], header, ref(responseList));
+        thread t(_get, type, ThreadUrls[i], isDebug, ref(responseList), headers, timeOut, verifySsl);
         threadPoll.push_back(move(t));
     }
 
@@ -66,9 +85,10 @@ vector<Response> get(vector<string> urls,py::dict head_dict,int nthread = 5) {
     return responseList;
 }
 
+
 PYBIND11_MODULE(fast_requetst_cpp, m) {
     m.doc() = "pybind11 fast_requetst module";
-    m.def("get", ::get);
+    m.def("run", run);
     py::class_<cpr::Response> response(m, "response");
         response.def(py::init<>())
         .def_readwrite("status_code", &Response::status_code)
@@ -83,5 +103,4 @@ PYBIND11_MODULE(fast_requetst_cpp, m) {
                  return py::bytes(re.text);
                 }
         );
-
 }

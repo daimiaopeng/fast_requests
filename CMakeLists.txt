@@ -1,7 +1,9 @@
-﻿cmake_minimum_required (VERSION 3.8)
+﻿cmake_minimum_required (VERSION 3.5)
 project ("fast_requetst")
-find_package(pybind11 CONFIG REQUIRED)
 
+SET(CMAKE_BUILD_TYPE "Release")
+
+find_package(pybind11 CONFIG REQUIRED)
 find_package(cpr CONFIG REQUIRED)
 
 pybind11_add_module(fast_requetst_cpp main.cpp)
